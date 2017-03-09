@@ -1,0 +1,32 @@
+{"blogs":
+  [
+    {
+      "eng": {
+        "title": "this is title1",
+        "desc": "this is news in eng1"
+      },
+      "rus": {
+        "title": "это название 1",
+        "desc": "это новость 1"
+      },
+      "ukr": {
+        "title": "це назва 1",
+        "desc": "це новини 1"
+      }
+    },
+    {
+      "eng": {
+        "title": "this is title2",
+        "desc": "this is news in eng2"
+      },
+      "rus": {
+        "title": "это название 2",
+        "desc": "это новости 2"
+      },
+      "ukr": {
+        "title": "це назва 2",
+        "desc": "це новини 2"
+      }
+    }
+  ]
+}
