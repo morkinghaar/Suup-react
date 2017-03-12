@@ -15,6 +15,7 @@ var match = reactRouter.match
 var RouterContext = reactRouter.RouterContext
 var fs = require('fs')
 var react = require('react')
+var Helmet = require('react-helmet')
 
 
 var port = 8000;
@@ -25,11 +26,28 @@ app.use(express.static('public'));
 
 
 app.get('/*', (req, res) => {
-  const scream = () => res.status(404).send('404')
-  fs.readFile(path.resolve(__dirname, './src/index.html'), 'utf-8', (error, htmlData) => {
-    if(error){
-      scream();
-    } else {
+
+
+  let head = Helmet.rewind();
+
+  const htmlData = `
+  <!doctype html>
+  <html ${head.htmlAttributes.toString()}>
+      <head>
+          ${head.title.toString()}
+          ${head.link.toString()}
+          <link rel="stylesheet" href="/assets/js/styles.css">
+
+      </head>
+      <body>
+        <div id="main">Loading...</div>
+        <script type="text/javascript" src="/assets/js/bundle.js"></script>
+      </body>
+  </html>
+`;
+
+
+
       match({routes: routes.default, location: req.url}, (err, redirectLocation, props)=> {
         if (err) {
           res.status(500).send(error.message)
@@ -43,8 +61,6 @@ app.get('/*', (req, res) => {
           res.status(404).send('Not found')
         }
       });
-    }
-  });
 });
 
 

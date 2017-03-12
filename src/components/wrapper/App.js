@@ -6,7 +6,7 @@ import store from '../../stores/store.js';
 import {observer} from 'mobx-react';
 import cookie from 'react-cookie';
 import Localization from '../../stores/localization.js';
-
+import Helmet from 'react-helmet';
 
 @observer class App extends React.Component {
   componentWillMount() {
@@ -39,8 +39,12 @@ import Localization from '../../stores/localization.js';
     const {main} = this.props;
     return (
       <div>
-        <Header />
-        <Navbar location={location} localization={Localization}/>
+        <Helmet htmlAttributes={{lang: store.currentLang, amp: undefined}} // amp takes no value
+                title="Home"
+                titleTemplate="Suup.com - %s"
+                defaultTitle="Suup"
+                />
+        <Header location={location} localization={Localization}/>
         <hr />
         {React.cloneElement(main, {
           localization: Localization

@@ -1,11 +1,11 @@
 import React from 'react'
-import Localization from '../../../stores/localization.js'
+import Navbar from '../navbar'
 import './index.scss'
 
-const header = () => {
+const header = (props) => {
   return <div className="header">
-    <h1>{Localization.header.title}</h1>
-    <hr />
+    <h1>{props.localization.header.title}</h1>
+    <Navbar location={props.location} localization={props.localization}/>
   </div>;
 }
 
