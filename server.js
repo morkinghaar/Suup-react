@@ -1,20 +1,15 @@
-require('import-export')
-require('babel-core/register')({presets: ['es2015', 'react'] })
-require.extensions['.scss'] = () => {
-  return;
-};
-require.extensions['.css'] = () => {
-  return;
-};
-var express = require('express')
-var path = require('path')
-var routes = require('./src/routes')
-var renderToString = require('react-dom/server').renderToString
-var reactRouter = require('react-router')
-var match = reactRouter.match
-var RouterContext = reactRouter.RouterContext
-var fs = require('fs')
-var react = require('react')
+import express from 'express'
+import path from 'path'
+import routes from './src/routes'
+import {renderToString} from 'react-dom/server'
+import reactRouter from 'react-router'
+import {match} from 'react-router'
+import {RouterContext} from 'react-router'
+import fs from 'fs'
+import React from 'react'
+import Helmet from 'react-helmet'
+import {Provider} from 'mobx-react'
+import store from './src/stores/store'
 
 
 var port = 8000;
@@ -22,29 +17,45 @@ var app = express();
 
 app.use(express.static('public'));
 
+const renderView = (renderProps, appState) => {
+
+  const componentHTML = renderToString(
+        <Provider store={store}>
+          <RouterContext {...renderProps} />
+        </Provider>
+  );
+
+
+  let head = Helmet.rewind();
+  const htmlData = `<!doctype html>
+                <html ${head.htmlAttributes.toString()}>
+                    <head>
+                        ${head.title.toString()}
+
+                        <link rel="stylesheet" href="/assets/js/styles.css">
+                    </head>
+                    <body>
+                      <div id="main">${componentHTML}</div>
+                      <script type="text/javascript" src="/assets/js/bundle.js"></script>
+                    </body>
+                </html>`;
+  return htmlData;
+  }
+
 
 
 app.get('/*', (req, res) => {
-  const scream = () => res.status(404).send('404')
-  fs.readFile(path.resolve(__dirname, './src/index.html'), 'utf-8', (error, htmlData) => {
-    if(error){
-      scream();
-    } else {
-      match({routes: routes.default, location: req.url}, (err, redirectLocation, props)=> {
+      match({routes: routes, location: req.url}, (err, redirectLocation, props)=> {
         if (err) {
           res.status(500).send(error.message)
         } else if (redirectLocation) {
           res.redirect(302, redirectLocation.pathname + redirectLocation.search)
         } else if (props) {
-          const content = renderToString(react.createElement(RouterContext, props))
-          const renderedHtml = htmlData.replace('Loading...', content)
-          res.status(200).send(renderedHtml)
+          res.status(200).send(renderView(props, store))
         } else {
           res.status(404).send('Not found')
         }
       });
-    }
-  });
 });
 
 

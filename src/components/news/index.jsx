@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Blog from '../blog';
-
+import Helmet from 'react-helmet'
 import Blogs from '../../stores/blogs.json'
 
 
@@ -11,6 +11,7 @@ const news = (props) => {
   var time = new Date().toLocaleTimeString();
 
   return <div className = "news-container">
+    <Helmet title="News"/>
     <h2>{localization.news.title}</h2>
       {
         Blogs.blogs.map((blog, i)=>

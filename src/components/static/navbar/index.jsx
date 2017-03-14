@@ -1,16 +1,16 @@
 import React from 'react';
 import {Link, browserHistory} from 'react-router';
 import NavLink from '../../NavLink.jsx';
-import store from '../../../stores/store.js';
 import cookie from 'react-cookie';
-import {observer} from 'mobx-react';
+import {observer, inject} from 'mobx-react';
+//import store from '../../../stores/store'
 
 
-
-
+@inject('store')
 @observer class navbar extends React.Component {
   render() {
     const {localization} = this.props;
+    const {store} = this.props;
     var langs = localization.getAvailableLanguages();
 
 
@@ -46,8 +46,8 @@ import {observer} from 'mobx-react';
                 {langs.map(function(lang, index){
                   return <option value={lang} key={index}>{lang}</option>
                 })};
-
               </select>
+
         </div>;
   };
 }

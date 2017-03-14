@@ -1,5 +1,5 @@
 require('import-export')
-require('babel-core/register')({presets: ['es2015', 'react'] })
+require('babel-core/register')({presets: ['es2015', 'react']})
 require.extensions['.scss'] = () => {
   return;
 };
@@ -14,10 +14,10 @@ var reactRouter = require('react-router')
 var match = reactRouter.match
 var RouterContext = reactRouter.RouterContext
 var fs = require('fs')
-var react = require('react')
+var React = require('react')
 var Helmet = require('react-helmet')
-
-
+var {Provider} = require('mobx-react')
+var store = require('./src/stores/store').default
 var port = 8000;
 var app = express();
 
@@ -25,38 +25,42 @@ app.use(express.static('public'));
 
 
 
-app.get('/*', (req, res) => {
+const renderView = (renderProps, appState) => {
+
+  const componentHTML = renderToString(
+    React.createElement(
+        Provider,
+        { store: appState },
+        React.createElement(RouterContext, renderProps))
+  );
 
 
   let head = Helmet.rewind();
+  const htmlData = `<!doctype html>
+                <html ${head.htmlAttributes.toString()}>
+                    <head>
+                        ${head.title.toString()}
 
-  const htmlData = `
-  <!doctype html>
-  <html ${head.htmlAttributes.toString()}>
-      <head>
-          ${head.title.toString()}
-          ${head.link.toString()}
-          <link rel="stylesheet" href="/assets/js/styles.css">
-
-      </head>
-      <body>
-        <div id="main">Loading...</div>
-        <script type="text/javascript" src="/assets/js/bundle.js"></script>
-      </body>
-  </html>
-`;
+                        <link rel="stylesheet" href="/assets/js/styles.css">
+                    </head>
+                    <body>
+                      <div id="main">${componentHTML}</div>
+                      <script type="text/javascript" src="/assets/js/bundle.js"></script>
+                    </body>
+                </html>`;
+  return htmlData;
+  }
 
 
 
+app.get('/*', (req, res) => {
       match({routes: routes.default, location: req.url}, (err, redirectLocation, props)=> {
         if (err) {
           res.status(500).send(error.message)
         } else if (redirectLocation) {
           res.redirect(302, redirectLocation.pathname + redirectLocation.search)
         } else if (props) {
-          const content = renderToString(react.createElement(RouterContext, props))
-          const renderedHtml = htmlData.replace('Loading...', content)
-          res.status(200).send(renderedHtml)
+          res.status(200).send(renderView(props, store))
         } else {
           res.status(404).send('Not found')
         }

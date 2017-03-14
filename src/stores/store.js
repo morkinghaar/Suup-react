@@ -1,10 +1,21 @@
-import {observable} from "mobx";
+import {observable, autorun, extendObservable, action} from "mobx";
 
-var lang = observable({
-  currentLang: '',
-  defaultLang: 'eng'
 
+
+class langStore {
+  @observable currentLang
+  @observable defaultLang
+  constructor() {
+        this.currentLang = ''
+        this.defaultLang = 'eng'
+    }
+
+}
+
+const lang = new langStore
+
+autorun(()=> {
+  console.log("Current lang was set to " +lang.currentLang)
 });
-
 
 export default lang;
